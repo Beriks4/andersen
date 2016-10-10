@@ -2,53 +2,55 @@
  * Created by Борис on 10.10.2016.
  */
 
-var resurses = ['1', '2', '3', '4', '5'];
+var items = ['Колесо', 'Колесо', 'Палка', 'Двигатель', 'Седло'];
 
 var recipes = [
     {
-        in: ['1', '2'],
-        out: '3'
+        in: ['Колесо', 'Колесо'],
+        out: 'Два колеса'
     },
     {
-        in: ['2', '3'],
-        out: '5'
+        in: ['Два колеса', 'Два колеса'],
+        out: 'Четыре колеса'
     },
     {
-        in: ['1', '4'],
-        out: '5'
+        in: ['Два колеса', 'Палка', 'Седло'],
+        out: 'Велосипед'
     },
     {
-        in: ['1', '2', '3'],
-        out: '6'
+        in: ['Два колеса', 'Палка', 'Седло', 'Двигатель'],
+        out: 'Мопед'
+    },
+    {
+        in: ['Четыре колеса', 'Двигатель', 'Палка'],
+        out: 'Автомобиль'
     }
 ];
 
-function getRes() {
-    return resurses;
+function getItems() {
+    return items;
 }
 
-function setRes(element) {
-    resurses.push(element);
+function setItems(element) {
+    items.push(element);
 }
 
-function itemsIn(item) {
+function itemsToDiv(item) {
 
-    document.getElementById('craft').innerHTML = '';
+    document.getElementById('craftItems').innerHTML = '';
     var button = document.createElement('button');
-    button.className = 'btn';
+    button.className = 'btn btn-default';
     button.style.margin = '2px';
     button.id = 'res';
-    //button.setAttribute('draggable', true);
-    //button.ondragstart = drag;
     button.innerHTML = item;
     document.getElementById('items').appendChild(button);
 }
 
 function itemsView() {
     document.getElementById('items').innerHTML = '';
-    var items = getRes();
+    var items = getItems();
     for (var i = 0; i < items.length; i++) {
-        itemsIn(items[i]);
+        itemsToDiv(items[i]);
     }
 
 }
@@ -56,10 +58,9 @@ function itemsView() {
 function addItem() {
     var element = document.getElementById('add').value;
     if (element) {
-        setRes(element);
+        setItems(element);
         itemsView();
         document.getElementById('add').value = '';
-        //alert('Add!');
     } else {
         alert('Пустое имя');
     }
@@ -72,13 +73,12 @@ function getRecipe(event) {
         for (var i = 0; i < recipes.length; i++) {
             var index = recipes[i].in.indexOf(value);
 
-            if (index >= 0) {	// собираем пачку рецептов, где упоминается переданный ингредиент
+            if (index >= 0) {	// собираем рецепты, где упоминается переданный ингредиент
                 outputRecipes += recipes[i].in.join(' + ') + ' = ' + recipes[i].out + '\n' + '</br>';
             }
 
         }
         if (outputRecipes != '') {
-            //alert(outputRecipes);
             var div = document.createElement('div');
             div.id = 'recipe';
             div.innerHTML = outputRecipes;
@@ -92,16 +92,15 @@ function getRecipe(event) {
     }
 }
 function toCraft(event) {
-    // alert(event.target.parentElement.id);
     if (event.target.tagName === 'BUTTON') {
         if (event.target.parentElement.id == 'items') {
             var element = event.target;
             document.getElementById('items').removeChild(element);
-            document.getElementById('craft').appendChild(element);
-        } else if (event.target.parentElement.id == 'craft') {
+            document.getElementById('craftItems').appendChild(element);
+        } else if (event.target.parentElement.id == 'craftItems') {
             var element = event.target;
             document.getElementById('items').appendChild(element);
-            document.getElementById('craft').removeChild(element);
+            document.getElementById('craftItems').removeChild(element);
         }
     }
 }
@@ -110,7 +109,7 @@ function craft() {
     message.innerHTML = '';
 
     var out = '';
-    var selected = document.getElementById('craft').querySelectorAll('button');
+    var selected = document.getElementById('craftItems').querySelectorAll('button');
     if (selected.length != 0) {
         var arrOfItems = [];
         for (var i = 0; i < selected.length; i++) {
@@ -132,7 +131,7 @@ function craft() {
         }
         if (out != 0) {
             message.innerHTML = 'Создано ' + out;
-            setRes(out);
+            setItems(out);
             itemsView();
         } else {
             message.innerHTML = 'Нет такого рецепта';
@@ -143,12 +142,10 @@ function craft() {
 
 }
 
-document.getElementById('craft').addEventListener('click', toCraft);
+document.getElementById('craftItems').addEventListener('click', toCraft);
 document.getElementById('items').addEventListener('click', toCraft);
 document.getElementById('go').addEventListener('click', craft);
-document.getElementById('craft').addEventListener('mouseover', getRecipe);
+document.getElementById('craftItems').addEventListener('mouseover', getRecipe);
 document.getElementById('items').addEventListener('mouseover', getRecipe);
 document.getElementById('addBtn').addEventListener('click', addItem);
 itemsView();
-
-// alert(recipes[1].in);
