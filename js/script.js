@@ -12,6 +12,7 @@ var elemAdd;
 function ready () {
     getElements();
     addListeners();
+    itemsView();
 }
 
 function getElements() {
@@ -126,4 +127,3 @@ function craft() {
     }
 }
 ready();
-itemsView();
