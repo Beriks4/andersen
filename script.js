@@ -2,8 +2,38 @@
  * Created by Борис on 10.10.2016.
  */
 
+var elemCraftItems;
+var elemItems;
+var elemGo;
+var elemAddBtn;
+var elemRecipes;
+var elemAdd;
+
+function ready () {
+    getElements();
+    addListeners();
+}
+
+function getElements() {
+    elemCraftItems   = document.getElementById('craftItems');
+    elemItems  = document.getElementById('items');
+    elemGo  = document.getElementById('go');
+    elemAddBtn = document.getElementById('addBtn');
+    elemRecipes = document.getElementById('recipes');
+    elemAdd = document.getElementById('add');
+}
+
+function addListeners() {
+    elemCraftItems.addEventListener('click', toCraft);
+    elemItems.addEventListener('click', toCraft);
+    elemGo.addEventListener('click', craft);
+    elemCraftItems.addEventListener('mouseover', getRecipe);
+    elemItems.addEventListener('mouseover', getRecipe);
+    elemAddBtn.addEventListener('click', addItem);
+}
+
 function itemsView() {
-    document.getElementById('items').innerHTML = '';
+    elemItems.innerHTML = '';
     var items = Models.getItems();
     for (var i = 0; i < items.length; i++) {
         Models.itemsToDiv(items[i]);
@@ -12,11 +42,11 @@ function itemsView() {
 }
 
 function addItem() {
-    var element = document.getElementById('add').value;
+    var element = elemAdd.value;
     if (element) {
         Models.setItems(element);
         itemsView();
-        document.getElementById('add').value = '';
+        elemAdd.value = '';
     } else {
         alert('Пустое имя');
     }
@@ -29,21 +59,19 @@ function getRecipe(event) {
         var value = event.target.innerHTML;
         for (var i = 0; i < recipes.length; i++) {
             var index = recipes[i].in.indexOf(value);
-
             if (index >= 0) {	// собираем рецепты, где упоминается переданный ингредиент
                 outputRecipes += recipes[i].in.join(' + ') + ' = ' + recipes[i].out + '\n' + '</br>';
             }
-
         }
         if (outputRecipes != '') {
             var div = document.createElement('div');
             div.id = 'recipe';
             div.innerHTML = outputRecipes;
-            document.getElementById('recipes').innerHTML = 'Рецепты: </br>';
-            document.getElementById('recipes').appendChild(div);
+            elemRecipes.innerHTML = 'Рецепты: </br>';
+            elemRecipes.appendChild(div);
         } else {
-            document.getElementById('recipes').innerHTML = '';
-            document.getElementById('recipes').innerHTML = 'Нет рецепта, где используется этот элемент!';
+            elemRecipes.innerHTML = '';
+            elemRecipes.innerHTML = 'Нет рецепта, где используется этот элемент!';
 
         }
     }
@@ -52,11 +80,11 @@ function toCraft(event) {
     if (event.target.tagName === 'BUTTON') {
         var element = event.target;
         if (event.target.parentElement.id == 'items') {
-            document.getElementById('items').removeChild(element);
-            document.getElementById('craftItems').appendChild(element);
+            elemItems.removeChild(element);
+            elemCraftItems.appendChild(element);
         } else if (event.target.parentElement.id == 'craftItems') {
-            document.getElementById('items').appendChild(element);
-            document.getElementById('craftItems').removeChild(element);
+            elemItems.appendChild(element);
+            elemCraftItems.removeChild(element);
         }
     }
 }
@@ -65,14 +93,14 @@ function craft() {
     message.innerHTML = '';
 
     var out = '';
-    var selected = document.getElementById('craftItems').querySelectorAll('button');
+    var selected = elemCraftItems.querySelectorAll('button');
     if (selected.length != 0) {
         var arrOfItems = [];
         for (var i = 0; i < selected.length; i++) {
             arrOfItems.push(selected[i].innerHTML);
         }
         var recipes = Models.getRecipes();
-        for (var i = 0; i < recipes.length; i++ ) {
+        for (var i = 0; i < recipes.length; i++) {
             var selectedRecipe = recipes[i].in.slice();
             var count = 0;
             for (var j = 0; j < arrOfItems.length; j++) {
@@ -96,13 +124,6 @@ function craft() {
     } else {
         message.innerHTML = 'Не добавлены элементы';
     }
-
 }
-
-document.getElementById('craftItems').addEventListener('click', toCraft);
-document.getElementById('items').addEventListener('click', toCraft);
-document.getElementById('go').addEventListener('click', craft);
-document.getElementById('craftItems').addEventListener('mouseover', getRecipe);
-document.getElementById('items').addEventListener('mouseover', getRecipe);
-document.getElementById('addBtn').addEventListener('click', addItem);
+ready();
 itemsView();
